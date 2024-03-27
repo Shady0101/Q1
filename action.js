@@ -1,28 +1,26 @@
+// action.js
 function submitForm() {
-    // Get input values
-    var name = document.getElementById("name").value;
-    var age = document.getElementById("age").value;
-    var salary = document.getElementById("salary").value;
-
-    // Construct the message
-    var message;
-    if (salary >= 1000) {
-        message = "high";
-    } else if (salary <= 500 && salary > 100) {
-        message = "middle";
-    } else {
-        message = "lower";
-    }
-
-    // Send data to PHP script using AJAX
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "update_database.php", true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            // Display response from server
-            document.getElementById("display").innerHTML = xhr.responseText;
-        }
+    var formData = {
+        name: document.getElementById("name").value,
+        age: document.getElementById("age").value,
+        salary: document.getElementById("salary").value
     };
-    xhr.send("name=" + name + "&age=" + age + "&salary=" + salary + "&message=" + message);
+    // Logging form data for debugging
+    console.log(formData);
+
+    fetch('db.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById("display").innerText = data;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById("display").innerText = "Error occurred while submitting data";
+    });
 }

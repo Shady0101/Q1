@@ -1,30 +1,28 @@
 <?php
-// Retrieve data sent from JavaScript
-$name = $_POST["name"];
-$age = $_POST["age"];
-$salary = $_POST["salary"];
-$message = $_POST["message"];
+    $dbhost = 'localhost';
+    $dbuser = 'root';
+    $dbpass = '';
+    $dbname = 'std_rec';
 
-// Connect to your database (replace with your actual database credentials)
-$servername = "localhost";
-$username = "username";
-$password = "password";
-$dbname = "your_database_name";
+    $conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+    if (!$conn) {
+        die('Could not connect: ' . mysqli_connect_error());
+    }
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $name = $_POST['name'];
+        $age = $_POST['age'];
+        $salary = $_POST['salary'];
 
-// Insert data into database
-$sql = "INSERT INTO your_table_name (name, age, salary, message) VALUES ('$name', '$age', '$salary', '$message')";
-if ($conn->query($sql) === TRUE) {
-    echo "Data inserted successfully";
-} else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
-}
+        $sql = "INSERT INTO student_record (name, age, salary) VALUES ('$name', '$age', '$salary')";
 
-$conn->close();
+        if (mysqli_query($conn, $sql)) {
+            echo "Data inserted successfully";
+        } else {
+            echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+        }
+    } else {
+        echo "Form not submitted";
+    }
 ?>
