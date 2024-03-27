@@ -1,30 +1,33 @@
 <?php
-// Retrieve data sent from JavaScript
-$name = $_POST["name"];
-$age = $_POST["age"];
-$salary = $_POST["salary"];
-$message = $_POST["message"];
+$dbhost = 'localhost';
+$dbuser = 'root';
+$dbpass = '';
+$dbname = 'std_rec';
 
-// Connect to your database (replace with your actual database credentials)
-$servername = "localhost";
-$username = "username";
-$password = "password";
-$dbname = "your_database_name";
+$conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+if (!$conn) {
+    die('Could not connect: ' . mysqli_connect_error());
 }
 
-// Insert data into database
-$sql = "INSERT INTO your_table_name (name, age, salary, message) VALUES ('$name', '$age', '$salary', '$message')";
-if ($conn->query($sql) === TRUE) {
-    echo "Data inserted successfully";
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = isset($_POST['name']) ? $_POST['name'] : '';
+    $age = isset($_POST['age']) ? $_POST['age'] : '';
+    $salary = isset($_POST['salary']) ? $_POST['salary'] : '';
+
+    // Sanitize inputs before using them in the SQL query
+    $name = mysqli_real_escape_string($conn, $name);
+    $age = mysqli_real_escape_string($conn, $age);
+    $salary = mysqli_real_escape_string($conn, $salary);
+
+    $sql = "INSERT INTO student_record (name, age, salary) VALUES ('$name', '$age', '$salary')";
+
+    if (mysqli_query($conn, $sql)) {
+        echo "Data inserted successfully";
+    } else {
+        echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+    }
 } else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+    echo "Form not submitted";
 }
-
-$conn->close();
 ?>
